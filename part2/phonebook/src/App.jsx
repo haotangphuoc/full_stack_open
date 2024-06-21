@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm.jsx'
 import Persons from './components/Persons.jsx'
-import axios from 'axios'
+import personService from './services/notes.js'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -11,20 +11,33 @@ const App = () => {
   const [newSearch, setNewSearch] = useState('')
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons').then(response => {
-      setPersons(response.data)
-    })
+    personService.get().then(fetchedPersons => setPersons(fetchedPersons))
   })
 
   const handleSubmit = () => {
-    if(persons.find(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
+    const foundPerson = persons.find(person => person.name === newName)
+    if(foundPerson) {
+      const confirmPatching = confirm(`${newName} is already added to the phonebook, replace the old number with the new one?`)
+      if(confirmPatching) {
+        personService.patch(foundPerson.id, {...foundPerson, number: newNumber}).then(updatedPerson => {
+          setPersons(persons.map(person => person.id != updatedPerson.id ? person : foundPerson))
+        })
+        
+      }
     }
     else {
-      setPersons(persons.concat({name: newName, number: newNumber, id: persons.length + 1}))
+      console.log(persons.length)
+      const newPerson = {name: newName, number: newNumber, id: (persons.length + 1).toString()}
+      personService.create(newPerson).then(createdPerson => setPersons(persons.concat(createdPerson)))
     }
     setNewName('')
     setNewNumber('')
+  }
+
+  const handleDelete = id => {
+    personService.deleteItem(id).then(
+      setPersons(persons.filter(person => person.id != id))
+    )
   }
 
   return (
@@ -48,6 +61,7 @@ const App = () => {
       <Persons 
         persons={persons}
         newSearch={newSearch}
+        handleDelete={handleDelete}
       />
     </div>
   )
