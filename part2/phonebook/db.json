@@ -1,16 +1,6 @@
 {
   "persons": [
     {
-      "name": "Arto Hellas",
-      "number": "040-123456",
-      "id": "1"
-    },
-    {
-      "id": "2",
-      "name": "hao",
-      "number": "0"
-    },
-    {
       "id": "3",
       "name": "jdfkif",
       "number": "00000"
@@ -19,11 +9,6 @@
       "id": "4",
       "name": "jvlre",
       "number": "90000"
-    },
-    {
-      "id": "5",
-      "name": "hor",
-      "number": "0499000"
     }
   ]
 }

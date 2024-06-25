@@ -3,12 +3,15 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm.jsx'
 import Persons from './components/Persons.jsx'
 import personService from './services/notes.js'
+import ErrorMessage from './components/ErrorMesage.jsx'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [error, setError] = useState(false)
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     personService.get().then(fetchedPersons => setPersons(fetchedPersons))
@@ -19,23 +22,30 @@ const App = () => {
     if(foundPerson) {
       const confirmPatching = confirm(`${newName} is already added to the phonebook, replace the old number with the new one?`)
       if(confirmPatching) {
-        personService.patch(foundPerson.id, {...foundPerson, number: newNumber}).then(updatedPerson => {
+        personService.patch(foundPerson.id, {...foundPerson, number: newNumber})
+        .then(updatedPerson => {
           setPersons(persons.map(person => person.id != updatedPerson.id ? person : foundPerson))
         })
-        
+        .patch(error => {
+          setError(true)
+          setMessage(`Information of ${newName} has already removed from server`)
+        })
       }
     }
     else {
       console.log(persons.length)
-      const newPerson = {name: newName, number: newNumber, id: (persons.length + 1).toString()}
+      const newPerson = {name: newName, number: newNumber, id: Math.floor(Math.random()*100000).toString()}
       personService.create(newPerson).then(createdPerson => setPersons(persons.concat(createdPerson)))
+      setError(false)
+      setMessage(`Added ${newName}`)
     }
     setNewName('')
     setNewNumber('')
   }
 
   const handleDelete = id => {
-    personService.deleteItem(id).then(
+    personService.deleteItem(id)
+    .then(
       setPersons(persons.filter(person => person.id != id))
     )
   }
@@ -43,6 +53,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <ErrorMessage 
+        error={error}
+        message={message}
+      />
       <Filter 
         newSearch={newSearch} 
         handleNewSearch={e => setNewSearch(e.target.value.toLowerCase())}>
