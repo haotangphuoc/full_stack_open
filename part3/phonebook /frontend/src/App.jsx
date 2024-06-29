@@ -22,11 +22,11 @@ const App = () => {
     if(foundPerson) {
       const confirmPatching = confirm(`${newName} is already added to the phonebook, replace the old number with the new one?`)
       if(confirmPatching) {
-        personService.patch(foundPerson.id, {...foundPerson, number: newNumber})
+        personService.put(foundPerson.id, {...foundPerson, number: newNumber})
         .then(updatedPerson => {
           setPersons(persons.map(person => person.id != updatedPerson.id ? person : foundPerson))
         })
-        .patch(error => {
+        .catch(error => {
           setError(true)
           setMessage(`Information of ${newName} has already removed from server`)
         })
