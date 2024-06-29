@@ -31,8 +31,8 @@ const deleteItem = (id) => {
     })
 }
 
-const patch = (id, editedPerson) => {
-    return axios.patch(`${baseUrl}/${id}`, editedPerson)
+const put = (id, editedPerson) => {
+    return axios.put(`${baseUrl}/${id}`, editedPerson)
         .then(response => {
             return response.data
         })
@@ -40,4 +40,4 @@ const patch = (id, editedPerson) => {
             console.log("Cant edit person")
         })
 }
-export default {get, create, patch, deleteItem}
+export default {get, create, put, deleteItem}
