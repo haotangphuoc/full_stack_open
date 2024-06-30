@@ -37,7 +37,7 @@ const put = (id, editedPerson) => {
             return response.data
         })
         .catch(error => {
-            console.log("Cant edit person")
+            console.log("Cant edit person" , error)
         })
 }
 export default {get, create, put, deleteItem}

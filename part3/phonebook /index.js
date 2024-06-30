@@ -30,20 +30,28 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info/', (request, response) => {
-    response.send(
-        `<div>
-            <p>Phonebook has info for ${persons.length}</p>   
-            <p>${new Date()}</p>
-         </div>`)
+    Person.find({})
+        .then(result => {
+            if(result) {
+                response.send(
+                    `<div>
+                        <p>Phonebook has info for ${persons.length}</p>   
+                        <p>${new Date()}</p>
+                     </div>`)
+            }
+            else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => next(error))
+    
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.filter(note => note.id === id)
-    if(person) {
-        response.json(person)
-    }
-    response.status(404).end()
+    const objId = request.params.id
+    Person.findById(objId).then(result => {
+        response.json(result)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -72,19 +80,19 @@ app.post('/api/persons/', (request, response) => {
     })
 })
 
-app.put('api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response) => {
     const body = request.body
     if(!body) {
         return response.status(400).json({
             error: 'content missing'
         })
     }
-    const person = {
+    const newPerson = {
         name: body.name,
         number: body.number
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, {new: True})
+    Person.findByIdAndUpdate(request.params.id, newPerson, { new: true })
         .then(updatedPerson => {
             response.json(updatedPerson)
         })
