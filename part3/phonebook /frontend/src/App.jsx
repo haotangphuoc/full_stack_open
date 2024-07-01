@@ -33,11 +33,17 @@ const App = () => {
       }
     }
     else {
-      console.log(persons.length)
-      const newPerson = {name: newName, number: newNumber, id: Math.floor(Math.random()*100000).toString()}
-      personService.create(newPerson).then(createdPerson => setPersons(persons.concat(createdPerson)))
-      setError(false)
-      setMessage(`Added ${newName}`)
+      if(newName.length < 3) {
+        setError(true)
+        setMessage(`Person validation failed: name`)
+      }
+      else {
+        console.log(persons.length)
+        const newPerson = {name: newName, number: newNumber, id: Math.floor(Math.random()*100000).toString()}
+        personService.create(newPerson).then(createdPerson => setPersons(persons.concat(createdPerson)))
+        setError(false)
+        setMessage(`Added ${newName}`)
+      }
     }
     setNewName('')
     setNewNumber('')
