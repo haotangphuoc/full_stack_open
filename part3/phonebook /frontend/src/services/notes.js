@@ -13,12 +13,11 @@ const get = () => {
 
 const create = (newPerson) => {
     return axios.post(baseUrl, newPerson)
-        .then(response => {
-            return response.data
-        })
+        .then(response =>  {return response.data})
         .catch(error => {
-            console.log("Cant create new person")
+            throw new Error(error.response.data.message)
         })
+        
 }
 
 const deleteItem = (id) => {
@@ -27,7 +26,7 @@ const deleteItem = (id) => {
         return response.data
     })
     .catch(error => {
-        console.log("Cant delete person")
+        return error
     })
 }
 

@@ -12,12 +12,15 @@ const errorHandler = (error, request, response, next) => {
 
     if(error.name == 'CastError') {
         return response.status(400).send({error: 'malformatted id'})
+    } else if (error.name === 'ValidationError') {
+        console.log(error.name)
+        return response.status(400).send(error)
     }
 
     next(error)
 }
 
-app.get('/api/persons', (request, response) => {
+app.get('/api/persons', (request, response, next) => {
     Person.find({})
         .then(result => {
             if(result) {
@@ -29,7 +32,7 @@ app.get('/api/persons', (request, response) => {
         })
 })
 
-app.get('/info/', (request, response) => {
+app.get('/info/', (request, response, next) => {
     Person.find({})
         .then(result => {
             if(result) {
@@ -47,14 +50,14 @@ app.get('/info/', (request, response) => {
     
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     const objId = request.params.id
     Person.findById(objId).then(result => {
         response.json(result)
     })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
     Person.findByIdAndDelete(id)
         .then(result => {
@@ -63,7 +66,7 @@ app.delete('/api/persons/:id', (request, response) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons/', (request, response) => {
+app.post('/api/persons/', (request, response, next) => {
     const body = request.body
     if(!body) {
         return response.status(400).json({
@@ -75,12 +78,14 @@ app.post('/api/persons/', (request, response) => {
         name: body.name,
         number: body.number
     })
-    newPerson.save().then(savedPerson => {
+    newPerson.save()
+        .then(savedPerson => {
         response.json(savedPerson)
-    })
+        })
+        .catch(error => next(error))
 })
 
-app.put('/api/persons/:id', (request, response) => {
+app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body
     if(!body) {
         return response.status(400).json({
