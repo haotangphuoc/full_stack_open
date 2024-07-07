@@ -5,10 +5,10 @@ import stylisticJs from '@stylistic/eslint-plugin-js'
 export default [
   js.configs.recommended,
   {
-    files: ["**/*.js"],
-    ignores: ["dist/**"],
+    files: ['**/*.js'],
+    ignores: ['dist/'],
     languageOptions: {
-      sourceType: "commonjs",
+      sourceType: "module",
       globals: {
         ...globals.node,
       },
