@@ -81,6 +81,18 @@ describe('HTTP POST request test', () => {
   })
 })
 
+describe('HTTP DELETE request test', () => {
+  test('DELETE request makes correct change to the DB', async () => {
+    const blogID = '5a422a851b54a676234d17f7'
+    await api.delete(`/api/blogs/${blogID}`)
+      .expect(204)
+
+    const getResponse = await api.get('/api/blogs')
+    const blogsIDList = getResponse.body.map(blog => blog.id)
+    assert(!blogsIDList.includes(blogID))
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
