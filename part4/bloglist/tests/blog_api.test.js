@@ -43,13 +43,6 @@ beforeEach(async () => {
 })
 
 describe('HTTP GET request tests', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({})
-    for(let blog of initialBlogs) {
-      let blogObject = new Blog(blog)
-      await blogObject.save()
-    }
-  })
   test('HTTP GET to /api/blogs URL return correct data', async () => {
     await api.get('/api/blogs')
       .expect(200)
@@ -62,7 +55,29 @@ describe('HTTP GET request tests', () => {
   test('HTTP GET return data with id field', async () => {
     const response = await api.get('/api/blogs')
     assert.strictEqual(undefined, response.body[0]._id)
-    assert.notStrictEqual(undefined, response.body[0].id)
+    assert.strictEqual("5a422a851b54a676234d17f7", response.body[0].id)
+  })
+})
+
+describe('HTTP POST request test', () => {
+  test('POST request makes correct change to the DB', async () => {
+    const newBlog = {
+      _id: "5a422b3a1b54a676233d17f9",
+      title: "Test",
+      author: "Hao Tang",
+      url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+      likes: 12,
+      __v: 0
+    }
+    await api.post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const getResponse = await api.get('/api/blogs')
+    const blogAtEnd = getResponse.body[getResponse.body.length - 1]
+    assert.strictEqual(getResponse.body.length, initialBlogs.length + 1)
+    assert.deepStrictEqual(blogAtEnd.title, newBlog.title)
   })
 })
 
