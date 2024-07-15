@@ -93,6 +93,26 @@ describe('HTTP DELETE request test', () => {
   })
 })
 
+describe('HTTP PUT request test', () => {
+  test('PUT request makes correct change to the DB', async () => {
+    const blogToBeEdited = {
+      _id: "5a422a851b54a676234d17f7",
+      title: "Test",
+      author: "Hao Tang",
+      url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+      likes: 12,
+      __v: 0
+    }
+
+    const getResponse = await api.get('/api/blogs')
+    const putResponse = await api.put(`/api/blogs/${blogToBeEdited._id}`)
+      .send(blogToBeEdited)
+      .expect(200)
+    assert.deepStrictEqual(putResponse.body.title, blogToBeEdited.title)
+    assert.strictEqual(getResponse.body.length, initialBlogs.length)
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
