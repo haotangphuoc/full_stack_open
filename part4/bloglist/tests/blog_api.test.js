@@ -1,5 +1,5 @@
 const { test, after, beforeEach, describe } = require('node:test')
-const assert = require('node:assert')
+const assert = require('assert')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
@@ -57,6 +57,12 @@ describe('HTTP GET request tests', () => {
 
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+
+  test('HTTP GET return data with id field', async () => {
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(undefined, response.body[0]._id)
+    assert.notStrictEqual(undefined, response.body[0].id)
   })
 })
 
