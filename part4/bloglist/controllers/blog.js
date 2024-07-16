@@ -1,16 +1,26 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const { ObjectId } = require('mongodb');
 require('express-async-errors')
 
 blogRouter.get('/', async (request, response, next) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('author')
   response.json(blogs)
 })
 
 blogRouter.post('/', async (request, response, next) => {
   const blog = new Blog(request.body)
-  const result = await blog.save()
-  response.status(201).json(result)
+  const savedBlog = await blog.save()
+  console.log(request.body.author)
+  const user = await User.findById(request.body.author)
+  console.log(user)
+  if (!user) {
+    return response.status(404).json({ error: 'User not found' });
+  }
+  user.blogs.push(savedBlog._id);
+  await user.save()
+  response.status(201).json(savedBlog)
 })
 
 blogRouter.delete('/:id', async (request, response, next) => {
