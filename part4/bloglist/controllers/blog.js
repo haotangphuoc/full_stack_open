@@ -1,7 +1,8 @@
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require('mongodb')
+const jwt = require('jsonwebtoken')
 require('express-async-errors')
 
 blogRouter.get('/', async (request, response, next) => {
@@ -9,12 +10,30 @@ blogRouter.get('/', async (request, response, next) => {
   response.json(blogs)
 })
 
+const getTokenFrom = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
+
 blogRouter.post('/', async (request, response, next) => {
-  const blog = new Blog(request.body)
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if(!decodedToken.id) {
+    return response.status(401).json({error: 'invalid token'})
+  }
+
+  const { title, url, likes } = request.body
+  const blog = new Blog({
+    title,
+    url,
+    likes,
+    author: decodedToken.id
+  })
   const savedBlog = await blog.save()
-  console.log(request.body.author)
-  const user = await User.findById(request.body.author)
-  console.log(user)
+
+  const user = await User.findById(decodedToken.id)
   if (!user) {
     return response.status(404).json({ error: 'User not found' });
   }
