@@ -1,12 +1,13 @@
-import { useState, useEffect } from 'react'
-import Blog from './components/Blog'
+import { useState, useEffect, useRef } from 'react'
 import blogService from './services/blogs'
 import loginService from './services/login'
-
+import LoginForm from './components/LoginForm'
+import Togglable from './components/Togglable'
+import AddBlogForm from './components/AddBlogFrom'
+import Blog from './components/Blog'
 const App = () => {
   const [blogs, setBlogs] = useState([])
 
-  const [token, setToken] = useState('')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -16,6 +17,8 @@ const App = () => {
 
   const [message, setMessage] = useState(null)
   const [errorMessage, setErrorMessage] = useState(null)
+
+  const blogFormRef = useRef()
 
   async function fetchBlogs() {
     const blogs = await blogService.getAll()
@@ -51,6 +54,7 @@ const App = () => {
   const handleAddBlog = async (event) => {
     event.preventDefault()
     try {
+      blogFormRef.current.toggleVisibility()
       const response = await blogService.create(title, url)
       fetchBlogs()
       setMessage(`Blog ${title} created by ${user.name}`)
@@ -74,57 +78,9 @@ const App = () => {
     if(userJSON) {
       const user = JSON.parse(userJSON)
       setUser(user)
-      setToken(user.token)
       blogService.setToken(user.token)
     }
   }, [])
-
-  const LoginForm = () => (
-    <div>
-      <h2>log in to your application</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input type="text" value={username} name="username" onChange={e => setUsername(e.target.value)}/>
-        </div>
-        <div>
-          password
-          <input type="password" password={password} name="password" onChange={e => setPassword(e.target.value)}/>
-        </div>
-        <button type='submit'>login</button>
-      </form>
-    </div>
-  )
-
-  const BlogForm = () => (
-    <div>
-      <h2>blogs</h2>
-      <div>
-        {user.name} logged in 
-        <button onClick={handleLogout}>log out</button>
-      </div>
-      <br />
-      <div>
-        <form onSubmit={handleAddBlog}>
-          <div>
-            title
-            <input type='text' value={title} name="title" onChange={e => setTitle(e.target.value)}/>
-          </div>
-          <div>
-            url
-            <input type='text' value={url} name="url" onChange={e => setUrl(e.target.value)}/>
-          </div>
-          <button type='submit'>create</button>
-        </form>
-      </div>
-      <br />
-      <div>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
-    </div>
-  )
 
   return (
     <div>
@@ -132,8 +88,38 @@ const App = () => {
       { message && <div style={{color: "white", background: "green"}}>{message}</div>}
       {
         user === null ?
-          LoginForm() :
-          BlogForm()
+          <LoginForm 
+            username={username}
+            password={password}
+            handleUsernameChange={(newVal) => setUsername(newVal)}
+            handlePasswordChange={(newVal) => setPassword(newVal)}
+            handleLogin={handleLogin}
+          /> 
+          : 
+          <div>
+            <h2>blogs</h2>
+            <div>
+              {user.name} logged in 
+              <button onClick={handleLogout}>log out</button>
+            </div>
+            <br />
+            <Togglable buttonLabel="Add new blog" ref={blogFormRef}>
+              <AddBlogForm
+                title={title}
+                url={url}
+                handleTitleChange={(newVal) => setTitle(newVal)}
+                handleUrlChange={(newVal) => setUrl(newVal)}
+                handleLogout={handleLogout}
+                handleAddBlog={handleAddBlog}
+                user={user}
+                blogs={blogs}
+              />
+            </Togglable>
+            <br />
+            <div>
+              {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+            </div>
+          </div>
       }
     </div>
   )
