@@ -69,9 +69,19 @@ const App = () => {
     }
   }
 
+  const handleAddLike  = (id, blog) => {
+    blogService.put(blog.id, {
+      ...blog,
+      likes: blog.likes + 1,
+      author: blog.author.id
+    })
+    fetchBlogs()
+  }
+
   useEffect( () => {
     fetchBlogs()
   }, [])
+  
 
   useEffect( () => {
     const userJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -117,7 +127,11 @@ const App = () => {
             </Togglable>
             <br />
             <div>
-              {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+              {blogs.map(blog => 
+                <Blog 
+                  key={blog.id} blog={blog} 
+                  addLike= {() => handleAddLike(blog.id, blog)}
+                />)}
             </div>
           </div>
       }

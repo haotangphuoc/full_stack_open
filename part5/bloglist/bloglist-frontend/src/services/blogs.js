@@ -19,5 +19,9 @@ const create = async (title, url) => {
   return response.data
 }
 
+const put = async (id, body) => {
+  const response = await axios.put(`${baseUrl}/${id}`, body)
+}
 
-export default { setToken, getAll, create }
+
+export default { setToken, getAll, create, put }
