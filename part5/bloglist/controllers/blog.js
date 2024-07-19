@@ -5,7 +5,7 @@ const { ObjectId } = require('mongodb')
 const jwt = require('jsonwebtoken')
 require('express-async-errors')
 
-blogRouter.get('/', async (request, response, next) => {
+blogRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('author')
   response.json(blogs)
 })
@@ -18,7 +18,7 @@ const getTokenFrom = request => {
   return null
 }
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', async (request, response) => {
   const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
   if(!decodedToken.id) {
     return response.status(401).json({error: 'invalid token'})
@@ -42,12 +42,12 @@ blogRouter.post('/', async (request, response, next) => {
   response.status(201).json(savedBlog)
 })
 
-blogRouter.delete('/:id', async (request, response, next) => {
+blogRouter.delete('/:id', async (request, response) => {
   await Blog.findByIdAndDelete(request.params.id)
   response.status(204).end()
 })
 
-blogRouter.put('/:id', async (request, response, next) => {
+blogRouter.put('/:id', async (request, response) => {
   const body = request.body
   const editedBlog = {
     title: body.title,
@@ -57,6 +57,11 @@ blogRouter.put('/:id', async (request, response, next) => {
   }
   const result = await Blog.findByIdAndUpdate(request.params.id, editedBlog, {new:true})
   response.status(200).json(result)
+})
+
+blogRouter.delete('/:id', async (request, response) => {
+  const result = await Blog.findByIdAndDelete(request.params.id)
+  response.status(204).end()
 })
 
 module.exports = blogRouter

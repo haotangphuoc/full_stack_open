@@ -23,5 +23,9 @@ const put = async (id, body) => {
   const response = await axios.put(`${baseUrl}/${id}`, body)
 }
 
+const deleteOne = async (id) => {
+  const response = await axios.delete(`${baseUrl}/${id}`)
+}
 
-export default { setToken, getAll, create, put }
+
+export default { setToken, getAll, create, put, deleteOne }

@@ -22,7 +22,7 @@ const App = () => {
 
   async function fetchBlogs() {
     const blogs = await blogService.getAll()
-    setBlogs(blogs)
+    setBlogs(blogs.sort((a, b) => a.likes - b.likes))
   }
 
   const handleLogin = async (event) => {
@@ -69,12 +69,31 @@ const App = () => {
     }
   }
 
-  const handleAddLike  = (id, blog) => {
-    blogService.put(blog.id, {
-      ...blog,
-      likes: blog.likes + 1,
-      author: blog.author.id
-    })
+  const handleAddLike  = async (id, blog) => {
+    try {
+      const response = await blogService.put(blog.id, {
+        ...blog,
+        likes: blog.likes + 1,
+        author: blog.author.id
+      })
+    } catch {
+      setErrorMessage('Blog cant be liked')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000);
+    }
+    fetchBlogs()
+  }
+
+  const handleDeleteBlog = async (id) => {
+    try {
+      const response = await blogService.deleteOne(id)
+    } catch {
+      setErrorMessage('Blog cant be deleted')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000);
+    }
     fetchBlogs()
   }
 
@@ -130,7 +149,8 @@ const App = () => {
               {blogs.map(blog => 
                 <Blog 
                   key={blog.id} blog={blog} 
-                  addLike= {() => handleAddLike(blog.id, blog)}
+                  addLike={() => handleAddLike(blog.id, blog)}
+                  deleteBlog={() => handleDeleteBlog(blog.id)}
                 />)}
             </div>
           </div>
