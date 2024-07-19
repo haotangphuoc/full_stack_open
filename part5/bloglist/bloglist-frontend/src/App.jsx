@@ -12,7 +12,7 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [title, setTitle] = useState('') 
+  const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
 
   const [message, setMessage] = useState(null)
@@ -33,7 +33,6 @@ const App = () => {
         'loggedBlogappUser', JSON.stringify(user)
       )
       setUser(user)
-      setToken(user.token)
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')
@@ -48,7 +47,6 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
-    setToken('')
   }
 
   const handleAddBlog = async (event) => {
@@ -60,12 +58,12 @@ const App = () => {
       setMessage(`Blog ${title} created by ${user.name}`)
       setTimeout(() => {
         setMessage(null)
-      }, 5000);
+      }, 5000)
     } catch {
       setErrorMessage('Blog cant be created')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 5000);
+      }, 5000)
     }
   }
 
@@ -80,7 +78,7 @@ const App = () => {
       setErrorMessage('Blog cant be liked')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 5000);
+      }, 5000)
     }
     fetchBlogs()
   }
@@ -92,7 +90,7 @@ const App = () => {
       setErrorMessage('Blog cant be deleted')
       setTimeout(() => {
         setErrorMessage(null)
-      }, 5000);
+      }, 5000)
     }
     fetchBlogs()
   }
@@ -100,7 +98,6 @@ const App = () => {
   useEffect( () => {
     fetchBlogs()
   }, [])
-  
 
   useEffect( () => {
     const userJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -113,22 +110,22 @@ const App = () => {
 
   return (
     <div>
-      { errorMessage && <div style={{color: "white", background: "red"}}>{errorMessage}</div>}
-      { message && <div style={{color: "white", background: "green"}}>{message}</div>}
+      { errorMessage && <div style={{ color: 'white', background: 'red' }}>{errorMessage}</div>}
+      { message && <div style={{ color: 'white', background: 'green' }}>{message}</div>}
       {
         user === null ?
-          <LoginForm 
+          <LoginForm
             username={username}
             password={password}
             handleUsernameChange={(newVal) => setUsername(newVal)}
             handlePasswordChange={(newVal) => setPassword(newVal)}
             handleLogin={handleLogin}
-          /> 
-          : 
+          />
+          :
           <div>
             <h2>blogs</h2>
             <div>
-              {user.name} logged in 
+              {user.name} logged in
               <button onClick={handleLogout}>log out</button>
             </div>
             <br />
@@ -146,9 +143,9 @@ const App = () => {
             </Togglable>
             <br />
             <div>
-              {blogs.map(blog => 
-                <Blog 
-                  key={blog.id} blog={blog} 
+              {blogs.map(blog =>
+                <Blog
+                  key={blog.id} blog={blog}
                   addLike={() => handleAddLike(blog.id, blog)}
                   deleteBlog={() => handleDeleteBlog(blog.id)}
                 />)}
