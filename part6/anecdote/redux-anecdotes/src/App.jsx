@@ -1,0 +1,14 @@
+import CreateAnecdoteForm from './components/CreateAnecdoteForm'
+import AnecdotesList from './components/AnecdoteList'
+
+const App = () => {
+  return (
+    <div>
+      <h2>Anecdotes</h2>
+      <AnecdotesList/>
+      <CreateAnecdoteForm/>
+    </div>
+  )
+}
+
+export default App
