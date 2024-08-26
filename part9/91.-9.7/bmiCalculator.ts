@@ -1,5 +1,5 @@
-const calculateBMI = (height: number, weight: number): string => {
-  const bmi: number = weight / ((height / 100) ** 2);
+export const calculateBMI = (height: number, weight: number): string => {
+  const bmi = weight / ((height / 100) ** 2);
   
   if(bmi < 16) 
     return "Underweight (Severe thinness)";
@@ -17,6 +17,9 @@ const calculateBMI = (height: number, weight: number): string => {
     return "Obese (Class II)";
   else
     return "Obese (Class III)";
-}
+};
 
-console.log(calculateBMI(Number(process.argv[4]), Number(process.argv[5])));
+if (require.main === module)
+  console.log(calculateBMI(Number(process.argv[4]), Number(process.argv[5])));
+
+export default calculateBMI;

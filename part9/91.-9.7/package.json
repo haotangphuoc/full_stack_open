@@ -6,13 +6,26 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts-node": "ts-node",
     "bmiCalc": "ts-node bmiCalculator.ts -s --",
-    "exerciseCalc": "ts-node exerciseCalculator.ts -s --"
+    "exerciseCalc": "ts-node exerciseCalculator.ts -s --",
+    "start": "ts-node index.ts",
+    "dev": "ts-node-dev index.ts",
+    "lint": "eslint ."
   },
   "author": "Hao Tang",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@stylistic/eslint-plugin": "^2.6.4",
+    "@types/eslint__js": "^8.42.3",
+    "@types/express": "^4.17.21",
+    "eslint": "^9.9.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.2.0"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }
